@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import vjvm.classloader.searchpath.ClassSearchPath;
 import vjvm.runtime.JClass;
 import vjvm.vm.VMContext;
-import vjvm.utils.UnimplementedError;
 
 import java.io.Closeable;
 import java.io.DataInputStream;

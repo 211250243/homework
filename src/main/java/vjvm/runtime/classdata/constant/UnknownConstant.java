@@ -11,6 +11,7 @@ public class UnknownConstant extends Constant {
   @SneakyThrows
   UnknownConstant(DataInput input, int length) {
     data = new byte[length];
+    //从输入流中读取len字节并将它们存储到缓冲区阵列data
     input.readFully(data);
   }
 

@@ -77,6 +77,26 @@ class Dump implements Callable<Integer> {
   }
 
   private void dump(JClass clazz) {
-    throw new UnimplementedError("TODO: dump clazz in lab 1.2; remove this for 1.1");
+    //%n 行分隔符(只能用于printf) == System.getProperty("line.separator")
+    System.out.printf("class name: %s%n", clazz.thisClass());
+    System.out.printf("minor version: %d%n", clazz.minorVersion());
+    System.out.printf("major version: %d%n", clazz.majorVersion());
+    System.out.printf("flags: 0x%x%n", clazz.accessFlags());
+    System.out.printf("this class: %s%n", clazz.thisClass());
+    System.out.printf("super class: %s%n%n%n", clazz.superClass());
+    System.out.println("constant pool:");
+    for (int i = 1; i < clazz.constantPool().size(); i++) {
+      if (clazz.constantPool().constant(i) != null)
+        System.out.printf("#%d = %s%n", i, clazz.constantPool().constant(i).toString());
+    }
+    System.out.printf("%ninterfaces:%n");
+    for (int i = 0; i < clazz.interfaces().count(); i++)
+      System.out.printf("%s%n", clazz.interfaces().interf(i).toString());
+    System.out.printf("%nfields:%n");
+    for (int i = 0; i < clazz.fields().count(); i++)
+      System.out.printf("%s%n", clazz.fields().field(i).toString());
+    System.out.printf("%nmethods:%n");
+    for (int i = 0; i < clazz.methods().count(); i++)
+      System.out.printf("%s%n", clazz.methods().method(i).toString());
   }
 }

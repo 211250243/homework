@@ -25,9 +25,11 @@ public class ConstantPool {
   @SneakyThrows
   public ConstantPool(DataInput dataInput, JClass jClass) {
     this.jClass = jClass;
+    //开头为常量池计数器（二进制数，范围：1~n-1）
     var count = dataInput.readUnsignedShort();
     constants = new Constant[count];
     for (int i = 1; i < count; ) {
+      //constructFromData给此数据分类并返回
       var r = Constant.constructFromData(dataInput, jClass);
       constants[i] = r.getLeft();
       i += r.getRight();
@@ -40,14 +42,17 @@ public class ConstantPool {
    * @param index the index of the constant
    * @return the constant in the pool
    */
+  //获取常量池constant[index]
   public Constant constant(int index) {
     return constants[index];
   }
 
+  //设置常量池constant[index]
   public void constant(int index, Constant constant) {
     constants[index] = constant;
   }
 
+  //获取常量池大小
   public int size() {
     return constants.length;
   }

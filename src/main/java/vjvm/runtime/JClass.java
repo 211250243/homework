@@ -1,11 +1,10 @@
 package vjvm.runtime;
 
 import vjvm.classloader.JClassLoader;
-import vjvm.runtime.classdata.ConstantPool;
-import vjvm.runtime.classdata.FieldInfo;
-import vjvm.runtime.classdata.MethodInfo;
-import vjvm.runtime.classdata.attribute.Attribute;
-import vjvm.utils.UnimplementedError;
+import vjvm.runtime.classdata.*;
+import vjvm.runtime.classdata.field.FieldInfo;
+import vjvm.runtime.classdata.constant.ClassConstant;
+import vjvm.runtime.classdata.method.MethodInfo;
 
 import java.io.DataInput;
 import java.io.InvalidClassException;
@@ -27,9 +26,18 @@ public class JClass {
   private final ConstantPool constantPool;
   @Getter
   private final int accessFlags;
-  private final FieldInfo[] fields;
-  private final MethodInfo[] methods;
-  private final Attribute[] attributes;
+  @Getter
+  private final String thisClass;
+  @Getter
+  private final String superClass;
+  @Getter
+  private final Interfaces interfaces;
+  @Getter
+  private final Fields fields;
+  @Getter
+  private final Methods methods;
+  @Getter
+  private final Attributes attributes;
 
   @SneakyThrows
   public JClass(DataInput dataInput, JClassLoader classLoader) {
@@ -41,20 +49,18 @@ public class JClass {
       throw new InvalidClassException(String.format(
         "Wrong magic number, expected: 0xcafebabe, got: 0x%x", magic));
     }
-
+    //short,int,long分别占2,4,8个字节(u2,u4,u8)
+    //read均为读取二进制数，转不同类型
     minorVersion = dataInput.readUnsignedShort();
     majorVersion = dataInput.readUnsignedShort();
-
     constantPool = new ConstantPool(dataInput, this);
-    accessFlags = dataInput.readUnsignedShort();
-
-    fields = null;
-    methods = null;
-    attributes = null;
-    throw new UnimplementedError(
-      "TODO: you need to construct thisClass, superClass, interfaces, fields, "
-        + "methods, and attributes from dataInput in lab 1.2; remove this for lab 1.1."
-        + "Some of them are not defined; you need to define them yourself");
+    accessFlags = dataInput.readUnsignedShort();//类或接口的访问权限
+    thisClass = ((ClassConstant) constantPool.constant(dataInput.readUnsignedShort())).name();
+    superClass = ((ClassConstant) constantPool.constant(dataInput.readUnsignedShort())).name();
+    interfaces = new Interfaces(dataInput, this);
+    fields = new Fields(dataInput, this, constantPool);
+    methods = new Methods(dataInput, this, constantPool);
+    attributes = new Attributes(dataInput, constantPool);
   }
 
   public boolean public_() {
@@ -94,19 +100,19 @@ public class JClass {
   }
 
   public int fieldsCount() {
-    return fields.length;
+    return fields.count();
   }
 
   public FieldInfo field(int index) {
-    return fields[index];
+    return fields.field(index);
   }
 
   public int methodsCount() {
-    return methods.length;
+    return methods.count();
   }
 
   public MethodInfo method(int index) {
-    return methods[index];
+    return methods.method(index);
   }
 
 }

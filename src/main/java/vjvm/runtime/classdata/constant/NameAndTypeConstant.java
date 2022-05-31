@@ -8,11 +8,9 @@ import vjvm.runtime.JClass;
 import java.io.DataInput;
 
 public class NameAndTypeConstant extends Constant {
-  private final int nameIndex;
-  private final int descriptorIndex;
+  private final int nameIndex, descriptorIndex;
   private final JClass self;
-  private String name;
-  private String descriptor;
+  private String name, descriptor;
 
   @SneakyThrows
   NameAndTypeConstant(DataInput input, JClass self) {
